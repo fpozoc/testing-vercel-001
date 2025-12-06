@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, CSSProperties } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useParams } from "next/navigation"
@@ -28,6 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { documents } from "@/app/lib/placeholder-data"
+import { BrandingToolbar } from "@/components/branding-toolbar"
 
 // Sub-component to handle state with key-based reset
 function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
@@ -35,6 +36,13 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
     const [title, setTitle] = useState(doc.title)
     const [status, setStatus] = useState(doc.status)
     const [date, setDate] = useState<Date | undefined>(new Date(doc.date))
+
+    // Branding State
+    const [fontFamily, setFontFamily] = useState("sans")
+    const [accentColor, setAccentColor] = useState("#000000")
+    const [logoUrl, setLogoUrl] = useState("")
+    const [backgroundImage, setBackgroundImage] = useState("")
+    const [showBackground, setShowBackground] = useState(false)
 
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -49,80 +57,99 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
         })
     }
 
+    const getFontFamilyClass = (font: string) => {
+        switch (font) {
+            case "serif":
+                return "font-serif"
+            case "mono":
+                return "font-mono"
+            default:
+                return "font-sans"
+        }
+    }
+
+    const previewStyle: CSSProperties = {
+        backgroundImage: showBackground && backgroundImage ? `url(${backgroundImage})` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        "--tw-prose-headings": accentColor,
+        "--tw-prose-links": accentColor,
+    } as CSSProperties
+
     return (
-        <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
-            {/* Metadata Toolbar */}
-            <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 shadow-sm md:flex-row md:items-center md:justify-between print:hidden">
-                <div className="flex flex-1 items-center gap-4">
+        <div className="flex h-[calc(100vh-4rem)] flex-col">
+            <BrandingToolbar
+                fontFamily={fontFamily}
+                setFontFamily={setFontFamily}
+                accentColor={accentColor}
+                setAccentColor={setAccentColor}
+                logoUrl={logoUrl}
+                setLogoUrl={setLogoUrl}
+                backgroundImage={backgroundImage}
+                setBackgroundImage={setBackgroundImage}
+                showBackground={showBackground}
+                setShowBackground={setShowBackground}
+            />
+
+            {/* Metadata Toolbar (Simplified for space) */}
+            <div className="flex items-center justify-between border-b bg-muted/40 p-4 print:hidden">
+                <div className="flex items-center gap-4">
                     <Input
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="h-9 text-lg font-semibold md:w-[300px]"
-                        placeholder="Document Title"
+                        className="h-8 w-[200px] font-semibold"
                     />
                     <Select value={status} onValueChange={setStatus}>
-                        <SelectTrigger className="w-[140px]">
+                        <SelectTrigger className="h-8 w-[120px]">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectItem value="Draft">Draft</SelectItem>
-                            <SelectItem value="In Review">In Review</SelectItem>
                             <SelectItem value="Published">Published</SelectItem>
-                            <SelectItem value="Archived">Archived</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "w-[240px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
-                                )}
-                            >
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                mode="single"
-                                selected={date}
-                                onSelect={setDate}
-                                initialFocus
-                            />
-                        </PopoverContent>
-                    </Popover>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="outline" onClick={() => handlePrint()}>
+                    <Button size="sm" variant="outline" onClick={() => handlePrint()}>
                         <Printer className="mr-2 h-4 w-4" />
                         Export PDF
                     </Button>
-                    <Button onClick={handleSave}>
+                    <Button size="sm" onClick={handleSave}>
                         <Save className="mr-2 h-4 w-4" />
-                        Save Changes
+                        Save
                     </Button>
                 </div>
             </div>
 
             {/* Editor & Preview */}
-            <div className="flex flex-1 flex-col gap-4 md:flex-row">
-                <div className="flex h-full w-full flex-col gap-2 md:w-1/2 print:hidden">
-                    <h2 className="text-sm font-medium text-muted-foreground">Markdown Input</h2>
+            <div className="flex flex-1 overflow-hidden">
+                <div className="w-1/2 border-r bg-background p-4 print:hidden overflow-y-auto">
                     <Textarea
-                        className="h-full resize-none font-mono"
+                        className="h-full min-h-[500px] resize-none border-0 p-0 focus-visible:ring-0 font-mono"
                         placeholder="Type your markdown here..."
                         value={markdown}
                         onChange={(e) => setMarkdown(e.target.value)}
                     />
                 </div>
-                <div className="flex h-full w-full flex-col gap-2 md:w-1/2 print:w-full">
-                    <h2 className="text-sm font-medium text-muted-foreground print:hidden">Preview</h2>
+                <div className="w-1/2 bg-muted/20 p-8 print:w-full print:p-0 overflow-y-auto">
                     <div ref={contentRef}>
-                        <Card className="h-full overflow-y-auto bg-white shadow-sm dark:bg-zinc-950 print:h-auto print:shadow-none print:border-0 print:[print-color-adjust:exact]">
-                            <CardContent className="prose prose-slate max-w-none p-8 dark:prose-invert print:prose-sm min-h-[297mm] print:min-h-0">
-                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+                        <Card
+                            className={cn(
+                                "min-h-[297mm] shadow-lg print:shadow-none print:border-0 print:[print-color-adjust:exact]",
+                                getFontFamilyClass(fontFamily)
+                            )}
+                            style={previewStyle}
+                        >
+                            <CardContent className="p-12">
+                                {logoUrl && (
+                                    <div className="mb-8">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
+                                    </div>
+                                )}
+                                <div className="prose prose-slate max-w-none dark:prose-invert print:prose-sm">
+                                    <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
+                                </div>
                             </CardContent>
                         </Card>
                     </div>
