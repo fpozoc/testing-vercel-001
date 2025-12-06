@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/card"
 
 const mockDocuments = [
-    { id: 1, title: "Project Proposal", date: "2 days ago", description: "Draft for the Q4 marketing initiative." },
+    { id: 1, title: "Project Proposal", date: "Just now", description: "Draft for the Q4 marketing initiative." },
     { id: 2, title: "Meeting Notes", date: "3 days ago", description: "Weekly sync with the engineering team." },
     { id: 3, title: "Quarterly Review", date: "1 week ago", description: "Performance review and goals for next quarter." },
     { id: 4, title: "Onboarding Guide", date: "2 weeks ago", description: "Resources for new team members." },
