@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
@@ -27,27 +27,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { documents } from "@/app/lib/placeholder-data"
 
-export default function EditDocumentPage() {
-    const params = useParams()
-    const [markdown, setMarkdown] = useState("")
-    const [title, setTitle] = useState("Loading...")
-    const [status, setStatus] = useState("Draft")
-    const [date, setDate] = useState<Date | undefined>(new Date())
-
-    useEffect(() => {
-        if (params.id) {
-            const doc = documents.find((d) => d.id === params.id)
-            if (doc) {
-                setMarkdown(doc.content)
-                setTitle(doc.title)
-                setStatus(doc.status)
-                setDate(new Date(doc.date))
-            } else {
-                setMarkdown("# Document Not Found")
-                setTitle("Error")
-            }
-        }
-    }, [params.id]) // Dependency array ensures this only runs when ID changes
+// Sub-component to handle state with key-based reset
+function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
+    const [markdown, setMarkdown] = useState(doc.content)
+    const [title, setTitle] = useState(doc.title)
+    const [status, setStatus] = useState(doc.status)
+    const [date, setDate] = useState<Date | undefined>(new Date(doc.date))
 
     const handleSave = () => {
         toast.success("Document saved", {
@@ -128,4 +113,22 @@ export default function EditDocumentPage() {
             </div>
         </div>
     )
+}
+
+export default function EditDocumentPage() {
+    const params = useParams()
+
+    // Find the document synchronously
+    const doc = documents.find((d) => d.id === params.id)
+
+    if (!doc) {
+        return (
+            <div className="flex h-[calc(100vh-8rem)] items-center justify-center">
+                <h2 className="text-xl font-semibold text-muted-foreground">Document Not Found</h2>
+            </div>
+        )
+    }
+
+    // Use key to force remount when doc.id changes, resetting state in DocumentEditor
+    return <DocumentEditor key={doc.id} doc={doc} />
 }

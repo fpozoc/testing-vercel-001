@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Plus, FileText } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -14,7 +14,7 @@ import { Badge } from "@/components/ui/badge"
 import { documents } from "@/app/lib/placeholder-data"
 
 export default function DocumentsPage() {
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string): "default" | "secondary" | "outline" | "destructive" => {
         switch (status) {
             case "Published":
                 return "default" // Black/Primary
@@ -53,7 +53,7 @@ export default function DocumentsPage() {
                                 <CardTitle className="line-clamp-1 text-lg font-semibold">
                                     {doc.title}
                                 </CardTitle>
-                                <Badge variant={getStatusColor(doc.status) as any}>
+                                <Badge variant={getStatusColor(doc.status)}>
                                     {doc.status}
                                 </Badge>
                             </div>
