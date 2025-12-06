@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: ["main"]
 
+# Grant permissions to allow the bot to merge PRs
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   quality-check:
     name: Lint & Build Check
@@ -24,14 +29,17 @@ jobs:
         run: npm run lint
       - name: Run Build
         run: npm run build
+      - name: Enable Auto-Merge
+        if: github.event_name == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge --auto --merge "${{ github.event.pull_request.html_url }}"
 
   release:
     name: Create Release Tag
     needs: quality-check
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
