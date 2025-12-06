@@ -10,13 +10,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-
-const mockDocuments = [
-    { id: 1, title: "Project Proposal", date: "Just now", description: "Draft for the Q4 marketing initiative." },
-    { id: 2, title: "Meeting Notes", date: "3 days ago", description: "Weekly sync with the engineering team." },
-    { id: 3, title: "Quarterly Review", date: "1 week ago", description: "Performance review and goals for next quarter." },
-    { id: 4, title: "Onboarding Guide", date: "2 weeks ago", description: "Resources for new team members." },
-]
+import { documents } from "@/app/lib/placeholder-data"
 
 export default function DocumentsPage() {
     return (
@@ -30,21 +24,25 @@ export default function DocumentsPage() {
                 </Link>
             </div>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {mockDocuments.map((doc) => (
+                {documents.map((doc) => (
                     <Card key={doc.id} className="flex flex-col">
                         <CardHeader>
-                            <CardTitle>{doc.title}</CardTitle>
-                            <CardDescription>Last edited {doc.date}</CardDescription>
+                            <CardTitle className="line-clamp-1">{doc.title}</CardTitle>
+                            <CardDescription>
+                                {doc.date} • {doc.status}
+                            </CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">
-                            <p className="text-sm text-muted-foreground">
-                                {doc.description}
+                            <p className="line-clamp-3 text-sm text-muted-foreground">
+                                {doc.content.replace(/[#*`]/g, "")}
                             </p>
                         </CardContent>
                         <CardFooter>
-                            <Button variant="outline" className="w-full">
-                                Open
-                            </Button>
+                            <Link href={`/documents/${doc.id}`} className="w-full">
+                                <Button variant="outline" className="w-full">
+                                    Open
+                                </Button>
+                            </Link>
                         </CardFooter>
                     </Card>
                 ))}
