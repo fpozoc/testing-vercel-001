@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, Save, Printer } from "lucide-react"
@@ -119,9 +120,9 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
                 <div className="flex h-full w-full flex-col gap-2 md:w-1/2 print:w-full">
                     <h2 className="text-sm font-medium text-muted-foreground print:hidden">Preview</h2>
                     <div ref={contentRef}>
-                        <Card className="h-full overflow-y-auto bg-white shadow-sm dark:bg-zinc-950 print:h-auto print:shadow-none print:border-0">
-                            <CardContent className="prose prose-zinc max-w-none p-8 dark:prose-invert min-h-[297mm] print:min-h-0">
-                                <ReactMarkdown>{markdown}</ReactMarkdown>
+                        <Card className="h-full overflow-y-auto bg-white shadow-sm dark:bg-zinc-950 print:h-auto print:shadow-none print:border-0 print:[print-color-adjust:exact]">
+                            <CardContent className="prose prose-slate max-w-none p-8 dark:prose-invert print:prose-sm min-h-[297mm] print:min-h-0">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
                             </CardContent>
                         </Card>
                     </div>
