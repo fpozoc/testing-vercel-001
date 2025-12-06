@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
+import { Toaster } from "@/components/ui/sonner"
 
 export default function DocumentsLayout({
     children,
@@ -132,6 +133,7 @@ export default function DocumentsLayout({
                     {children}
                 </main>
             </div>
+            <Toaster />
         </div>
     )
 }
