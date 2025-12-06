@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 const mockDocuments = [
-    { id: 1, title: "Project Proposal", date: "2023-10-25" },
+    { id: 1, title: "Project Proposal", date: "2025-12-06" },
     { id: 2, title: "Meeting Notes", date: "2023-10-26" },
     { id: 3, title: "Quarterly Review", date: "2023-10-27" },
 ];
