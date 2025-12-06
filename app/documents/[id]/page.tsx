@@ -47,7 +47,7 @@ export default function EditDocumentPage() {
                 setTitle("Error")
             }
         }
-    }, [params.id])
+    }, [params.id]) // Dependency array ensures this only runs when ID changes
 
     const handleSave = () => {
         toast.success("Document saved", {
