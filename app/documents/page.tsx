@@ -1,50 +1,54 @@
-import Link from "next/link";
+import Link from "next/link"
+import { Plus } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
 
 const mockDocuments = [
-    { id: 1, title: "Project Proposal", date: "2025-12-06" },
-    { id: 2, title: "Meeting Notes", date: "2023-10-26" },
-    { id: 3, title: "Quarterly Review", date: "2023-10-27" },
-];
+    { id: 1, title: "Project Proposal", date: "2 days ago", description: "Draft for the Q4 marketing initiative." },
+    { id: 2, title: "Meeting Notes", date: "3 days ago", description: "Weekly sync with the engineering team." },
+    { id: 3, title: "Quarterly Review", date: "1 week ago", description: "Performance review and goals for next quarter." },
+    { id: 4, title: "Onboarding Guide", date: "2 weeks ago", description: "Resources for new team members." },
+]
 
-export default function DocumentsDashboard() {
+export default function DocumentsPage() {
     return (
-        <div className="min-h-screen bg-zinc-50 p-8 dark:bg-black">
-            <div className="mx-auto max-w-5xl">
-                <div className="mb-8 flex items-center justify-between">
-                    <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">
-                        Documents
-                    </h1>
-                    <Link
-                        href="/documents/new"
-                        className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-black"
-                    >
-                        Create New Document
-                    </Link>
-                </div>
-
-                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {mockDocuments.map((doc) => (
-                        <div
-                            key={doc.id}
-                            className="flex flex-col justify-between rounded-lg border border-zinc-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900"
-                        >
-                            <div>
-                                <h2 className="mb-2 text-xl font-semibold text-zinc-900 dark:text-zinc-50">
-                                    {doc.title}
-                                </h2>
-                                <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                                    Last edited: {doc.date}
-                                </p>
-                            </div>
-                            <div className="mt-4">
-                                <button className="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
-                                    Open
-                                </button>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+        <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between">
+                <h1 className="text-lg font-semibold md:text-2xl">All Documents</h1>
+                <Link href="/documents/new">
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" /> Create New
+                    </Button>
+                </Link>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {mockDocuments.map((doc) => (
+                    <Card key={doc.id} className="flex flex-col">
+                        <CardHeader>
+                            <CardTitle>{doc.title}</CardTitle>
+                            <CardDescription>Last edited {doc.date}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <p className="text-sm text-muted-foreground">
+                                {doc.description}
+                            </p>
+                        </CardContent>
+                        <CardFooter>
+                            <Button variant="outline" className="w-full">
+                                Open
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                ))}
             </div>
         </div>
-    );
+    )
 }
