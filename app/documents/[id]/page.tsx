@@ -4,19 +4,12 @@ import { useState, useRef, CSSProperties } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useParams } from "next/navigation"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon, Save, Printer } from "lucide-react"
+import { Save, Printer } from "lucide-react"
 import { toast } from "sonner"
 import { useReactToPrint } from "react-to-print"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-} from "@/components/ui/popover"
 import {
     Select,
     SelectContent,
@@ -28,21 +21,18 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
 import { documents } from "@/app/lib/placeholder-data"
-import { BrandingToolbar } from "@/components/branding-toolbar"
+import { DesignToolbar } from "@/components/document/design-toolbar"
 
 // Sub-component to handle state with key-based reset
 function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
     const [markdown, setMarkdown] = useState(doc.content)
     const [title, setTitle] = useState(doc.title)
     const [status, setStatus] = useState(doc.status)
-    const [date, setDate] = useState<Date | undefined>(new Date(doc.date))
 
     // Branding State
     const [fontFamily, setFontFamily] = useState("sans")
-    const [accentColor, setAccentColor] = useState("#000000")
+    const [brandColor, setBrandColor] = useState("#000000")
     const [logoUrl, setLogoUrl] = useState("")
-    const [backgroundImage, setBackgroundImage] = useState("")
-    const [showBackground, setShowBackground] = useState(false)
 
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -69,29 +59,22 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
     }
 
     const previewStyle: CSSProperties = {
-        backgroundImage: showBackground && backgroundImage ? `url(${backgroundImage})` : "none",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        "--tw-prose-headings": accentColor,
-        "--tw-prose-links": accentColor,
+        "--tw-prose-headings": brandColor,
+        "--tw-prose-links": brandColor,
     } as CSSProperties
 
     return (
-        <div className="flex h-[calc(100vh-4rem)] flex-col">
-            <BrandingToolbar
+        <div className="flex h-full flex-col">
+            <DesignToolbar
                 fontFamily={fontFamily}
                 setFontFamily={setFontFamily}
-                accentColor={accentColor}
-                setAccentColor={setAccentColor}
+                brandColor={brandColor}
+                setBrandColor={setBrandColor}
                 logoUrl={logoUrl}
                 setLogoUrl={setLogoUrl}
-                backgroundImage={backgroundImage}
-                setBackgroundImage={setBackgroundImage}
-                showBackground={showBackground}
-                setShowBackground={setShowBackground}
             />
 
-            {/* Metadata Toolbar (Simplified for space) */}
+            {/* Metadata Toolbar */}
             <div className="flex items-center justify-between border-b bg-muted/40 p-4 print:hidden">
                 <div className="flex items-center gap-4">
                     <Input
