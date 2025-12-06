@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import ReactMarkdown from "react-markdown"
 import { useParams } from "next/navigation"
 import { format } from "date-fns"
-import { Calendar as CalendarIcon, Save } from "lucide-react"
+import { Calendar as CalendarIcon, Save, Printer } from "lucide-react"
 import { toast } from "sonner"
+import { useReactToPrint } from "react-to-print"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -34,6 +35,13 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
     const [status, setStatus] = useState(doc.status)
     const [date, setDate] = useState<Date | undefined>(new Date(doc.date))
 
+    const contentRef = useRef<HTMLDivElement>(null)
+
+    const handlePrint = useReactToPrint({
+        contentRef: contentRef,
+        documentTitle: title,
+    })
+
     const handleSave = () => {
         toast.success("Document saved", {
             description: "Your changes have been successfully saved.",
@@ -43,7 +51,7 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
     return (
         <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
             {/* Metadata Toolbar */}
-            <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 shadow-sm md:flex-row md:items-center md:justify-between">
+            <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 shadow-sm md:flex-row md:items-center md:justify-between print:hidden">
                 <div className="flex flex-1 items-center gap-4">
                     <Input
                         value={title}
@@ -85,15 +93,21 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
                         </PopoverContent>
                     </Popover>
                 </div>
-                <Button onClick={handleSave}>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Changes
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => handlePrint()}>
+                        <Printer className="mr-2 h-4 w-4" />
+                        Export PDF
+                    </Button>
+                    <Button onClick={handleSave}>
+                        <Save className="mr-2 h-4 w-4" />
+                        Save Changes
+                    </Button>
+                </div>
             </div>
 
             {/* Editor & Preview */}
             <div className="flex flex-1 flex-col gap-4 md:flex-row">
-                <div className="flex h-full w-full flex-col gap-2 md:w-1/2">
+                <div className="flex h-full w-full flex-col gap-2 md:w-1/2 print:hidden">
                     <h2 className="text-sm font-medium text-muted-foreground">Markdown Input</h2>
                     <Textarea
                         className="h-full resize-none font-mono"
@@ -102,13 +116,15 @@ function DocumentEditor({ doc }: { doc: typeof documents[0] }) {
                         onChange={(e) => setMarkdown(e.target.value)}
                     />
                 </div>
-                <div className="flex h-full w-full flex-col gap-2 md:w-1/2">
-                    <h2 className="text-sm font-medium text-muted-foreground">Preview</h2>
-                    <Card className="h-full overflow-y-auto bg-white shadow-sm dark:bg-zinc-950">
-                        <CardContent className="prose prose-zinc max-w-none p-8 dark:prose-invert">
-                            <ReactMarkdown>{markdown}</ReactMarkdown>
-                        </CardContent>
-                    </Card>
+                <div className="flex h-full w-full flex-col gap-2 md:w-1/2 print:w-full">
+                    <h2 className="text-sm font-medium text-muted-foreground print:hidden">Preview</h2>
+                    <div ref={contentRef}>
+                        <Card className="h-full overflow-y-auto bg-white shadow-sm dark:bg-zinc-950 print:h-auto print:shadow-none print:border-0">
+                            <CardContent className="prose prose-zinc max-w-none p-8 dark:prose-invert min-h-[297mm] print:min-h-0">
+                                <ReactMarkdown>{markdown}</ReactMarkdown>
+                            </CardContent>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>
