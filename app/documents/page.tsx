@@ -5,26 +5,13 @@ import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { documents } from "@/app/lib/placeholder-data"
-import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
-
-function getStatusColor(status: string): "default" | "secondary" | "outline" | "destructive" {
-    switch (status) {
-        case "Published":
-            return "default"
-        case "Draft":
-            return "secondary"
-        case "Archived":
-            return "outline"
-        default:
-            return "default"
-    }
-}
+import { AnalyticsChart, DocumentStatusChart } from "@/components/dashboard/analytics-chart"
+import { ActivityFeed } from "@/components/dashboard/activity-feed"
+import { RecentDocuments } from "@/components/dashboard/recent-documents"
 
 export default function DocumentsPage() {
     return (
@@ -88,7 +75,7 @@ export default function DocumentsPage() {
                 </Card>
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Recent Activity</CardTitle>
+                        <CardTitle className="text-sm font-medium">Active Users</CardTitle>
                         <CreditCard className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
@@ -111,34 +98,21 @@ export default function DocumentsPage() {
                 </Card>
                 <Card className="col-span-3">
                     <CardHeader>
-                        <CardTitle>Recent Documents</CardTitle>
-                        <CardDescription>
-                            You made {documents.length} documents this month.
-                        </CardDescription>
+                        <CardTitle>Document Status</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="space-y-8">
-                            {documents.map((doc) => (
-                                <div key={doc.id} className="flex items-center">
-                                    <div className="space-y-1">
-                                        <p className="text-sm font-medium leading-none">{doc.title}</p>
-                                        <p className="text-sm text-muted-foreground">
-                                            {doc.date}
-                                        </p>
-                                    </div>
-                                    <div className="ml-auto font-medium">
-                                        <Badge variant={getStatusColor(doc.status)}>{doc.status}</Badge>
-                                    </div>
-                                    <Button variant="ghost" size="sm" asChild className="ml-4">
-                                        <Link href={`/documents/${doc.id}`}>
-                                            Edit
-                                        </Link>
-                                    </Button>
-                                </div>
-                            ))}
-                        </div>
+                        <DocumentStatusChart />
                     </CardContent>
                 </Card>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+                <div className="col-span-4 lg:col-span-5">
+                    <RecentDocuments />
+                </div>
+                <div className="col-span-3 lg:col-span-2">
+                    <ActivityFeed />
+                </div>
             </div>
         </div>
     )
