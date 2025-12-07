@@ -108,7 +108,7 @@ export default function DocumentsPage() {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <div className="col-span-4 lg:col-span-5">
-                    <RecentDocuments />
+                    <RecentDocuments documents={documents} />
                 </div>
                 <div className="col-span-3 lg:col-span-2">
                     <ActivityFeed />

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import {
     Table,
     TableBody,
@@ -16,50 +17,29 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Edit } from "lucide-react"
+import { MoreHorizontal, Pencil, Copy, Trash } from "lucide-react"
+import { toast } from "sonner"
 
-const documents = [
-    {
-        id: "1",
-        title: "Q3 Financial Report",
-        status: "Published",
-        date: "2023-10-25",
-    },
-    {
-        id: "2",
-        title: "Engineering Onboarding",
-        status: "Draft",
-        date: "2023-11-01",
-    },
-    {
-        id: "3",
-        title: "Brand Guidelines",
-        status: "Published",
-        date: "2023-09-15",
-    },
-    {
-        id: "4",
-        title: "Product Roadmap 2024",
-        status: "Draft",
-        date: "2023-12-01",
-    },
-    {
-        id: "5",
-        title: "Meeting Notes: Design Sync",
-        status: "Archived",
-        date: "2023-12-05",
-    },
-    {
-        id: "6",
-        title: "Marketing Campaign Q4",
-        status: "Published",
-        date: "2023-11-20",
-    },
-]
+interface Document {
+    id: string
+    title: string
+    status: string
+    date: string
+}
 
-export function RecentDocuments() {
+interface RecentDocumentsProps {
+    documents: Document[]
+}
+
+export function RecentDocuments({ documents }: RecentDocumentsProps) {
     const [filter, setFilter] = useState("all")
 
     const filteredDocuments = documents.filter((doc) => {
@@ -70,7 +50,7 @@ export function RecentDocuments() {
     const getStatusColor = (status: string) => {
         switch (status) {
             case "Published":
-                return "default" // or "success" if available, default is usually primary
+                return "default"
             case "Draft":
                 return "secondary"
             case "Archived":
@@ -78,6 +58,14 @@ export function RecentDocuments() {
             default:
                 return "default"
         }
+    }
+
+    const handleDuplicate = (id: string) => {
+        toast.success("Document duplicated")
+    }
+
+    const handleDelete = (id: string) => {
+        toast.success("Document deleted")
     }
 
     return (
@@ -117,10 +105,30 @@ export function RecentDocuments() {
                                 </TableCell>
                                 <TableCell>{doc.date}</TableCell>
                                 <TableCell className="text-right">
-                                    <Button variant="ghost" size="icon">
-                                        <Edit className="h-4 w-4" />
-                                        <span className="sr-only">Edit</span>
-                                    </Button>
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon">
+                                                <MoreHorizontal className="h-4 w-4" />
+                                                <span className="sr-only">Actions</span>
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuItem asChild>
+                                                <Link href={`/documents/${doc.id}`} className="flex items-center cursor-pointer">
+                                                    <Pencil className="mr-2 h-4 w-4" />
+                                                    Edit
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleDuplicate(doc.id)} className="cursor-pointer">
+                                                <Copy className="mr-2 h-4 w-4" />
+                                                Duplicate
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleDelete(doc.id)} className="text-red-600 cursor-pointer">
+                                                <Trash className="mr-2 h-4 w-4" />
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
                                 </TableCell>
                             </TableRow>
                         ))}
