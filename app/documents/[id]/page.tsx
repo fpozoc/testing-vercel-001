@@ -1,14 +1,27 @@
-"use client"
-
-import { useParams } from "next/navigation"
-import { documents } from "@/app/lib/placeholder-data"
+import { redirect } from "next/navigation"
+import { auth } from "@/auth"
+import { db } from "@/app/lib/db"
 import { DocumentEditor } from "@/components/document-editor"
 
-export default function EditDocumentPage() {
-    const params = useParams()
+interface EditDocumentPageProps {
+    params: {
+        id: string
+    }
+}
 
-    // Find the document synchronously
-    const doc = documents.find((d) => d.id === params.id)
+export default async function EditDocumentPage({ params }: EditDocumentPageProps) {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        redirect("/api/auth/signin")
+    }
+
+    const doc = await db.document.findUnique({
+        where: {
+            id: params.id,
+            authorId: session.user.id,
+        },
+    })
 
     if (!doc) {
         return (
@@ -18,6 +31,12 @@ export default function EditDocumentPage() {
         )
     }
 
-    // Use key to force remount when doc.id changes, resetting state in DocumentEditor
-    return <DocumentEditor key={doc.id} initialData={doc} />
+    // Transform date to string and ensure status is valid
+    const formattedDoc = {
+        ...doc,
+        date: doc.updatedAt.toISOString().split('T')[0],
+        status: doc.status as "draft" | "published" | "archived"
+    }
+
+    return <DocumentEditor key={doc.id} initialData={formattedDoc} />
 }
