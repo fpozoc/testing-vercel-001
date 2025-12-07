@@ -8,6 +8,7 @@ import { Save, Printer, User, Check, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useReactToPrint } from "react-to-print"
 import Link from "next/link"
+import { saveDocument } from "@/app/actions/save-document"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -63,23 +64,31 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
         documentTitle: title || "Untitled Document",
     })
 
-    const handleSave = () => {
+    const handleSave = async () => {
         setIsSaving(true)
-        setTimeout(() => {
-            if (!initialData) {
-                // Create Mode
-                toast.success("Document created", {
-                    description: "Your new document has been successfully created.",
-                })
-                router.push("/documents")
+        try {
+            // Assuming 'content' in the instruction refers to 'markdown' state
+            // Assuming 'initialData.status' in the instruction refers to 'status' state
+            const result = await saveDocument({
+                id: initialData?.id,
+                title: title,
+                content: markdown,
+                status: status,
+            })
+
+            if (result.success && result.doc) {
+                toast.success("Document saved successfully")
+                // If it's a new document, we might want to redirect or update the URL with the new ID
+                if (!initialData && result.doc.id) {
+                    router.push(`/documents/${result.doc.id}`)
+                }
             } else {
-                // Edit Mode
-                toast.success("Document saved", {
-                    description: "Your changes have been successfully saved.",
+                toast.error("Failed to save document", {
+                    description: result.error || "An unknown error occurred.",
                 })
             }
             setIsSaving(false)
-        }, 800) // Simulate network delay
+        }
     }
 
     const getFontFamilyClass = (font: string) => {

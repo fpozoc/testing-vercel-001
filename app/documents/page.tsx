@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Plus, FileText, Activity, Users, CreditCard } from "lucide-react"
+import { redirect } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -8,12 +9,38 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import { documents } from "@/app/lib/placeholder-data"
 import { AnalyticsChart, DocumentStatusChart } from "@/components/dashboard/analytics-chart"
 import { ActivityFeed } from "@/components/dashboard/activity-feed"
 import { RecentDocuments } from "@/components/dashboard/recent-documents"
+import { auth } from "@/auth"
+import { db } from "@/app/lib/db"
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+    const session = await auth()
+
+    if (!session?.user?.id) {
+        redirect("/api/auth/signin")
+    }
+
+    const documents = await db.document.findMany({
+        where: {
+            authorId: session.user.id,
+        },
+        orderBy: {
+            updatedAt: "desc",
+        },
+    })
+
+    // Transform dates to string for client components
+    const formattedDocuments = documents.map((doc: any) => ({
+        ...doc,
+        date: doc.updatedAt.toISOString().split('T')[0],
+        status: doc.status.charAt(0).toUpperCase() + doc.status.slice(1)
+    }))
+
+    const draftCount = documents.filter((d: any) => d.status === 'draft').length
+    const publishedCount = documents.filter((d: any) => d.status === 'published').length
+
     return (
         <div className="flex flex-col gap-8">
             <div className="flex items-center justify-between space-y-2">
@@ -52,7 +79,7 @@ export default function DocumentsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {documents.filter(d => d.status === 'Draft').length}
+                            {draftCount}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             +180.1% from last month
@@ -66,7 +93,7 @@ export default function DocumentsPage() {
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">
-                            {documents.filter(d => d.status === 'Published').length}
+                            {publishedCount}
                         </div>
                         <p className="text-xs text-muted-foreground">
                             +19% from last month
@@ -108,7 +135,7 @@ export default function DocumentsPage() {
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
                 <div className="col-span-4 lg:col-span-5">
-                    <RecentDocuments documents={documents} />
+                    <RecentDocuments documents={formattedDocuments} />
                 </div>
                 <div className="col-span-3 lg:col-span-2">
                     <ActivityFeed />
