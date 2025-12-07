@@ -47,7 +47,7 @@ export function RecentDocuments({ documents }: RecentDocumentsProps) {
         return doc.status.toLowerCase() === filter.toLowerCase()
     })
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string): "default" | "secondary" | "outline" | "destructive" => {
         switch (status) {
             case "Published":
                 return "default"
@@ -60,11 +60,11 @@ export function RecentDocuments({ documents }: RecentDocumentsProps) {
         }
     }
 
-    const handleDuplicate = (id: string) => {
+    const handleDuplicate = (_id: string) => {
         toast.success("Document duplicated")
     }
 
-    const handleDelete = (id: string) => {
+    const handleDelete = (_id: string) => {
         toast.success("Document deleted")
     }
 
@@ -99,7 +99,7 @@ export function RecentDocuments({ documents }: RecentDocumentsProps) {
                             <TableRow key={doc.id}>
                                 <TableCell className="font-medium">{doc.title}</TableCell>
                                 <TableCell>
-                                    <Badge variant={getStatusColor(doc.status) as any}>
+                                    <Badge variant={getStatusColor(doc.status)}>
                                         {doc.status}
                                     </Badge>
                                 </TableCell>
