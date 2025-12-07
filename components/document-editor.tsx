@@ -4,7 +4,7 @@ import { useState, useRef, CSSProperties } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useRouter } from "next/navigation"
-import { Save, Printer, User } from "lucide-react"
+import { Save, Printer, User, Check } from "lucide-react"
 import { toast } from "sonner"
 import { useReactToPrint } from "react-to-print"
 
@@ -42,6 +42,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
     const [title, setTitle] = useState(initialData?.title || "")
     const [status, setStatus] = useState(initialData?.status || "Draft")
     const [author, setAuthor] = useState("")
+    const [isSaving, setIsSaving] = useState(false)
 
     // Branding State
     const [fontFamily, setFontFamily] = useState("sans")
@@ -62,19 +63,22 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
     })
 
     const handleSave = () => {
-        if (!initialData) {
-            // Create Mode
-            toast.success("Document created", {
-                description: "Your new document has been successfully created.",
-            })
-            // Simulate redirect to the new document (in a real app, we'd get the ID from the API)
-            router.push("/documents")
-        } else {
-            // Edit Mode
-            toast.success("Document saved", {
-                description: "Your changes have been successfully saved.",
-            })
-        }
+        setIsSaving(true)
+        setTimeout(() => {
+            if (!initialData) {
+                // Create Mode
+                toast.success("Document created", {
+                    description: "Your new document has been successfully created.",
+                })
+                router.push("/documents")
+            } else {
+                // Edit Mode
+                toast.success("Document saved", {
+                    description: "Your changes have been successfully saved.",
+                })
+            }
+            setIsSaving(false)
+        }, 800) // Simulate network delay
     }
 
     const getFontFamilyClass = (font: string) => {
@@ -145,7 +149,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                     <Input
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        className="h-8 w-[200px] font-semibold"
+                        className="h-8 w-[200px] font-semibold bg-background"
                         placeholder="Document Title"
                     />
                     <div className="flex items-center gap-2">
@@ -153,12 +157,12 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                         <Input
                             value={author}
                             onChange={(e) => setAuthor(e.target.value)}
-                            className="h-8 w-[150px]"
+                            className="h-8 w-[150px] bg-background"
                             placeholder="Author"
                         />
                     </div>
                     <Select value={status} onValueChange={setStatus}>
-                        <SelectTrigger className="h-8 w-[120px]">
+                        <SelectTrigger className="h-8 w-[120px] bg-background">
                             <SelectValue placeholder="Status" />
                         </SelectTrigger>
                         <SelectContent>
@@ -172,28 +176,40 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                         <Printer className="mr-2 h-4 w-4" />
                         Export PDF
                     </Button>
-                    <Button size="sm" onClick={handleSave}>
-                        <Save className="mr-2 h-4 w-4" />
-                        {initialData ? "Save" : "Create"}
+                    <Button size="sm" onClick={handleSave} disabled={isSaving}>
+                        {isSaving ? (
+                            <>
+                                <Check className="mr-2 h-4 w-4" />
+                                Saved!
+                            </>
+                        ) : (
+                            <>
+                                <Save className="mr-2 h-4 w-4" />
+                                {initialData ? "Save" : "Create"}
+                            </>
+                        )}
                     </Button>
                 </div>
             </div>
 
             {/* Editor & Preview */}
             <div className="flex flex-1 overflow-hidden">
-                <div className="w-1/2 border-r bg-background p-4 print:hidden overflow-y-auto">
+                {/* Left: Markdown Input */}
+                <div className="w-1/2 border-r bg-slate-50 dark:bg-slate-900 p-4 print:hidden overflow-y-auto">
                     <Textarea
-                        className="h-full min-h-[500px] resize-none border-0 p-0 focus-visible:ring-0 font-mono"
-                        placeholder="Type your markdown here..."
+                        className="h-full min-h-[500px] resize-none border-0 p-0 focus-visible:ring-0 font-mono bg-transparent text-sm leading-relaxed"
+                        placeholder="# Start writing your document..."
                         value={markdown}
                         onChange={(e) => setMarkdown(e.target.value)}
                     />
                 </div>
-                <div className="w-1/2 bg-muted/20 p-8 print:w-full print:p-0 overflow-y-auto flex justify-center">
-                    <div ref={contentRef}>
+
+                {/* Right: Preview Workspace */}
+                <div className="w-1/2 bg-slate-100 dark:bg-slate-950 p-8 print:w-full print:p-0 overflow-y-auto flex flex-col items-center">
+                    <div ref={contentRef} className="my-4">
                         <Card
                             className={cn(
-                                "shadow-lg print:shadow-none print:border-0 print:[print-color-adjust:exact]",
+                                "shadow-xl print:shadow-none print:border-0 print:[print-color-adjust:exact] bg-white text-slate-950",
                                 getFontFamilyClass(fontFamily)
                             )}
                             style={{
@@ -208,7 +224,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                                         <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
                                     </div>
                                 )}
-                                <div className="prose prose-slate max-w-none dark:prose-invert print:prose-sm">
+                                <div className="prose prose-slate max-w-none print:prose-sm">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
                                 </div>
                             </CardContent>
