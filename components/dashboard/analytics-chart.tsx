@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, PieChart, Pie, Cell, Tooltip, Legend } from "recharts"
 
 const data = [
     {
@@ -53,6 +53,12 @@ const data = [
     },
 ]
 
+const statusData = [
+    { name: "Published", value: 12, color: "#10b981" }, // emerald-500
+    { name: "Draft", value: 5, color: "#f59e0b" }, // amber-500
+    { name: "Archived", value: 3, color: "#64748b" }, // slate-500
+]
+
 export function AnalyticsChart() {
     return (
         <ResponsiveContainer width="100%" height={350}>
@@ -78,6 +84,30 @@ export function AnalyticsChart() {
                     className="fill-primary"
                 />
             </BarChart>
+        </ResponsiveContainer>
+    )
+}
+
+export function DocumentStatusChart() {
+    return (
+        <ResponsiveContainer width="100%" height={350}>
+            <PieChart>
+                <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                >
+                    {statusData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                </Pie>
+                <Tooltip />
+                <Legend verticalAlign="bottom" height={36} />
+            </PieChart>
         </ResponsiveContainer>
     )
 }
