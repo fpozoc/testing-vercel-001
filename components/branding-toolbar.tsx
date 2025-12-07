@@ -51,7 +51,6 @@ export function BrandingToolbar({
     setLogoUrl,
     backgroundImage,
     setBackgroundImage,
-    setBackgroundImage,
     setShowBackground,
     pageSize,
     setPageSize,
