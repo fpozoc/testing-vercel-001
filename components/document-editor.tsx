@@ -215,7 +215,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                     <div ref={contentRef} className="my-4">
                         <Card
                             className={cn(
-                                "bg-white shadow-lg mx-auto min-h-[297mm] w-full max-w-[210mm] p-10 mb-10 print:shadow-none print:border-0 print:[print-color-adjust:exact] text-slate-950",
+                                "bg-white shadow-lg mx-auto min-h-[297mm] w-full max-w-[210mm] p-10 mb-10 print:shadow-none print:m-0 print:w-full print:h-full print:rounded-none print:max-w-none print:bg-white text-slate-950",
                                 getFontFamilyClass(fontFamily)
                             )}
                             style={{
