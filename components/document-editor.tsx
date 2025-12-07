@@ -199,11 +199,11 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
             </div>
 
             {/* Editor & Preview */}
-            <div className="flex flex-1 overflow-hidden h-[calc(100vh-12rem)]">
+            <div className="grid grid-cols-2 h-[calc(100vh-140px)] w-full overflow-hidden">
                 {/* Left: Markdown Input */}
-                <div className="w-1/2 min-w-0 border-r bg-slate-50 dark:bg-slate-900 p-4 print:hidden overflow-y-auto h-full">
+                <div className="h-full overflow-y-auto border-r border-gray-200 bg-white min-w-0">
                     <Textarea
-                        className="h-full min-h-full resize-none border-0 p-0 focus-visible:ring-0 font-mono bg-transparent text-sm leading-relaxed"
+                        className="w-full h-full resize-none p-6 outline-none font-mono bg-transparent text-sm leading-relaxed border-0 focus-visible:ring-0"
                         placeholder="# Start writing your document..."
                         value={markdown}
                         onChange={(e) => setMarkdown(e.target.value)}
@@ -211,11 +211,11 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                 </div>
 
                 {/* Right: Preview Workspace */}
-                <div className="w-1/2 min-w-0 bg-slate-100 dark:bg-zinc-900 p-8 print:w-full print:p-0 overflow-y-auto h-full flex flex-col items-center">
+                <div className="h-full overflow-y-auto bg-slate-100/50 p-8 min-w-0">
                     <div ref={contentRef} className="my-4">
                         <Card
                             className={cn(
-                                "shadow-2xl print:shadow-none print:border-0 print:[print-color-adjust:exact] bg-white text-slate-950",
+                                "bg-white shadow-lg mx-auto min-h-[297mm] w-full max-w-[210mm] p-10 mb-10 print:shadow-none print:border-0 print:[print-color-adjust:exact] text-slate-950",
                                 getFontFamilyClass(fontFamily)
                             )}
                             style={{
@@ -223,14 +223,14 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                                 ...getPageSizeStyle(pageSize),
                             }}
                         >
-                            <CardContent className={cn("h-full", getMarginClass(margins))}>
+                            <CardContent className={cn("h-full p-0", getMarginClass(margins))}>
                                 {logoUrl && (
                                     <div className="mb-8">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
                                         <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
                                     </div>
                                 )}
-                                <div className="prose prose-slate max-w-none print:prose-sm break-words">
+                                <div className="prose prose-sm max-w-none break-words overflow-hidden">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
                                 </div>
                             </CardContent>
