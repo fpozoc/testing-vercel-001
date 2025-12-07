@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { documents } from "@/app/lib/placeholder-data"
-import { Overview } from "@/components/dashboard/overview"
+import { AnalyticsChart } from "@/components/dashboard/analytics-chart"
 
 function getStatusColor(status: string): "default" | "secondary" | "outline" | "destructive" {
     switch (status) {
@@ -106,7 +106,7 @@ export default function DocumentsPage() {
                         <CardTitle>Overview</CardTitle>
                     </CardHeader>
                     <CardContent className="pl-2">
-                        <Overview />
+                        <AnalyticsChart />
                     </CardContent>
                 </Card>
                 <Card className="col-span-3">
