@@ -10,7 +10,6 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
-import { Label } from "@/components/ui/label"
 
 interface BrandingToolbarProps {
     fontFamily: string
@@ -52,7 +51,6 @@ export function BrandingToolbar({
     setLogoUrl,
     backgroundImage,
     setBackgroundImage,
-    showBackground,
     setShowBackground,
     pageSize,
     setPageSize,

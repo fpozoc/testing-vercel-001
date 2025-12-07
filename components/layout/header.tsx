@@ -3,9 +3,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Search, Calculator, Calendar, CreditCard, Settings, Smile, User } from "lucide-react"
+import { Calendar, CreditCard, Settings, Smile, User } from "lucide-react"
 
-import { Input } from "@/components/ui/input"
+
 import {
     Breadcrumb,
     BreadcrumbItem,
