@@ -199,9 +199,9 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
             </div>
 
             {/* Editor & Preview */}
-            <div className="flex flex-1 overflow-hidden h-[calc(100vh-8rem)]">
+            <div className="flex flex-1 overflow-hidden h-[calc(100vh-12rem)]">
                 {/* Left: Markdown Input */}
-                <div className="w-1/2 border-r bg-slate-50 dark:bg-slate-900 p-4 print:hidden overflow-y-auto">
+                <div className="w-1/2 min-w-0 border-r bg-slate-50 dark:bg-slate-900 p-4 print:hidden overflow-y-auto h-full">
                     <Textarea
                         className="h-full min-h-full resize-none border-0 p-0 focus-visible:ring-0 font-mono bg-transparent text-sm leading-relaxed"
                         placeholder="# Start writing your document..."
@@ -211,7 +211,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                 </div>
 
                 {/* Right: Preview Workspace */}
-                <div className="w-1/2 bg-slate-100 dark:bg-zinc-900 p-8 print:w-full print:p-0 overflow-y-auto flex flex-col items-center">
+                <div className="w-1/2 min-w-0 bg-slate-100 dark:bg-zinc-900 p-8 print:w-full print:p-0 overflow-y-auto h-full flex flex-col items-center">
                     <div ref={contentRef} className="my-4">
                         <Card
                             className={cn(
@@ -230,7 +230,7 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                                         <img src={logoUrl} alt="Logo" className="h-12 w-auto object-contain" />
                                     </div>
                                 )}
-                                <div className="prose prose-slate max-w-none print:prose-sm">
+                                <div className="prose prose-slate max-w-none print:prose-sm break-words">
                                     <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
                                 </div>
                             </CardContent>
