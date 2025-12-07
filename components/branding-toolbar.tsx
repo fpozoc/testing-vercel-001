@@ -1,6 +1,6 @@
 "use client"
 
-import { Type, Palette, Image as ImageIcon, LayoutTemplate } from "lucide-react"
+import { Type, Palette, Image as ImageIcon, LayoutTemplate, Settings2 } from "lucide-react"
 
 import {
     Select,
@@ -13,6 +13,12 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { Button } from "@/components/ui/button"
 
 interface BrandingToolbarProps {
     fontFamily: string
@@ -25,6 +31,10 @@ interface BrandingToolbarProps {
     setBackgroundImage: (value: string) => void
     showBackground: boolean
     setShowBackground: (value: boolean) => void
+    pageSize: string
+    setPageSize: (value: string) => void
+    margins: string
+    setMargins: (value: string) => void
 }
 
 export function BrandingToolbar({
@@ -38,6 +48,10 @@ export function BrandingToolbar({
     setBackgroundImage,
     showBackground,
     setShowBackground,
+    pageSize,
+    setPageSize,
+    margins,
+    setMargins,
 }: BrandingToolbarProps) {
     return (
         <div className="sticky top-0 z-20 flex flex-col gap-4 border-b bg-background/95 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/60 md:flex-row md:items-center">
@@ -106,6 +120,54 @@ export function BrandingToolbar({
                     </Label>
                 </div>
             </div>
+
+            <Separator orientation="vertical" className="hidden h-6 md:block" />
+
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="h-9 gap-2">
+                        <Settings2 className="h-4 w-4" />
+                        <span className="hidden md:inline">Layout</span>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                    <div className="grid gap-4">
+                        <div className="space-y-2">
+                            <h4 className="font-medium leading-none">Page Settings</h4>
+                            <p className="text-sm text-muted-foreground">
+                                Configure the PDF export layout.
+                            </p>
+                        </div>
+                        <div className="grid gap-2">
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="pageSize">Size</Label>
+                                <Select value={pageSize} onValueChange={setPageSize}>
+                                    <SelectTrigger id="pageSize" className="col-span-2 h-8">
+                                        <SelectValue placeholder="Select size" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="a4">A4 (210mm)</SelectItem>
+                                        <SelectItem value="letter">Letter (8.5in)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div className="grid grid-cols-3 items-center gap-4">
+                                <Label htmlFor="margins">Margins</Label>
+                                <Select value={margins} onValueChange={setMargins}>
+                                    <SelectTrigger id="margins" className="col-span-2 h-8">
+                                        <SelectValue placeholder="Select margins" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="standard">Standard (2.5cm)</SelectItem>
+                                        <SelectItem value="compact">Compact (1.25cm)</SelectItem>
+                                        <SelectItem value="wide">Wide (5cm)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+                </PopoverContent>
+            </Popover>
         </div>
     )
 }

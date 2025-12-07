@@ -4,7 +4,7 @@ import { useState, useRef, CSSProperties } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useRouter } from "next/navigation"
-import { Save, Printer } from "lucide-react"
+import { Save, Printer, User } from "lucide-react"
 import { toast } from "sonner"
 import { useReactToPrint } from "react-to-print"
 
@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { Textarea } from "@/components/ui/textarea"
-import { DesignToolbar } from "@/components/document/design-toolbar"
+import { BrandingToolbar } from "@/components/branding-toolbar"
 
 interface DocumentData {
     id: string
@@ -41,11 +41,18 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
     const [markdown, setMarkdown] = useState(initialData?.content || "")
     const [title, setTitle] = useState(initialData?.title || "")
     const [status, setStatus] = useState(initialData?.status || "Draft")
+    const [author, setAuthor] = useState("")
 
     // Branding State
     const [fontFamily, setFontFamily] = useState("sans")
-    const [brandColor, setBrandColor] = useState("#000000")
+    const [accentColor, setAccentColor] = useState("#000000")
     const [logoUrl, setLogoUrl] = useState("")
+    const [backgroundImage, setBackgroundImage] = useState("")
+    const [showBackground, setShowBackground] = useState(false)
+
+    // Layout State
+    const [pageSize, setPageSize] = useState("a4")
+    const [margins, setMargins] = useState("standard")
 
     const contentRef = useRef<HTMLDivElement>(null)
 
@@ -81,20 +88,55 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
         }
     }
 
+    const getPageSizeStyle = (size: string) => {
+        switch (size) {
+            case "a4":
+                return { width: "210mm", minHeight: "297mm" }
+            case "letter":
+                return { width: "8.5in", minHeight: "11in" }
+            default:
+                return { width: "210mm", minHeight: "297mm" }
+        }
+    }
+
+    const getMarginClass = (margin: string) => {
+        switch (margin) {
+            case "standard":
+                return "p-10" // ~2.5cm
+            case "compact":
+                return "p-5" // ~1.25cm
+            case "wide":
+                return "p-20" // ~5cm
+            default:
+                return "p-10"
+        }
+    }
+
     const previewStyle: CSSProperties = {
-        "--tw-prose-headings": brandColor,
-        "--tw-prose-links": brandColor,
+        "--tw-prose-headings": accentColor,
+        "--tw-prose-links": accentColor,
+        backgroundImage: showBackground && backgroundImage ? `url(${backgroundImage})` : "none",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
     } as CSSProperties
 
     return (
         <div className="flex h-full flex-col">
-            <DesignToolbar
+            <BrandingToolbar
                 fontFamily={fontFamily}
                 setFontFamily={setFontFamily}
-                brandColor={brandColor}
-                setBrandColor={setBrandColor}
+                accentColor={accentColor}
+                setAccentColor={setAccentColor}
                 logoUrl={logoUrl}
                 setLogoUrl={setLogoUrl}
+                backgroundImage={backgroundImage}
+                setBackgroundImage={setBackgroundImage}
+                showBackground={showBackground}
+                setShowBackground={setShowBackground}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                margins={margins}
+                setMargins={setMargins}
             />
 
             {/* Metadata Toolbar */}
@@ -106,6 +148,15 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                         className="h-8 w-[200px] font-semibold"
                         placeholder="Document Title"
                     />
+                    <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <Input
+                            value={author}
+                            onChange={(e) => setAuthor(e.target.value)}
+                            className="h-8 w-[150px]"
+                            placeholder="Author"
+                        />
+                    </div>
                     <Select value={status} onValueChange={setStatus}>
                         <SelectTrigger className="h-8 w-[120px]">
                             <SelectValue placeholder="Status" />
@@ -138,16 +189,19 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                         onChange={(e) => setMarkdown(e.target.value)}
                     />
                 </div>
-                <div className="w-1/2 bg-muted/20 p-8 print:w-full print:p-0 overflow-y-auto">
+                <div className="w-1/2 bg-muted/20 p-8 print:w-full print:p-0 overflow-y-auto flex justify-center">
                     <div ref={contentRef}>
                         <Card
                             className={cn(
-                                "min-h-[297mm] shadow-lg print:shadow-none print:border-0 print:[print-color-adjust:exact]",
+                                "shadow-lg print:shadow-none print:border-0 print:[print-color-adjust:exact]",
                                 getFontFamilyClass(fontFamily)
                             )}
-                            style={previewStyle}
+                            style={{
+                                ...previewStyle,
+                                ...getPageSizeStyle(pageSize),
+                            }}
                         >
-                            <CardContent className="p-12">
+                            <CardContent className={cn("h-full", getMarginClass(margins))}>
                                 {logoUrl && (
                                     <div className="mb-8">
                                         {/* eslint-disable-next-line @next/next/no-img-element */}
