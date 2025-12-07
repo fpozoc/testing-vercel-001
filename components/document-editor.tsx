@@ -4,9 +4,10 @@ import { useState, useRef, CSSProperties } from "react"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { useRouter } from "next/navigation"
-import { Save, Printer, User, Check } from "lucide-react"
+import { Save, Printer, User, Check, ArrowLeft } from "lucide-react"
 import { toast } from "sonner"
 import { useReactToPrint } from "react-to-print"
+import Link from "next/link"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -146,6 +147,11 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
             {/* Metadata Toolbar */}
             <div className="flex items-center justify-between border-b bg-muted/40 p-4 print:hidden">
                 <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link href="/documents">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
                     <Input
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -193,11 +199,11 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
             </div>
 
             {/* Editor & Preview */}
-            <div className="flex flex-1 overflow-hidden">
+            <div className="flex flex-1 overflow-hidden h-[calc(100vh-8rem)]">
                 {/* Left: Markdown Input */}
                 <div className="w-1/2 border-r bg-slate-50 dark:bg-slate-900 p-4 print:hidden overflow-y-auto">
                     <Textarea
-                        className="h-full min-h-[500px] resize-none border-0 p-0 focus-visible:ring-0 font-mono bg-transparent text-sm leading-relaxed"
+                        className="h-full min-h-full resize-none border-0 p-0 focus-visible:ring-0 font-mono bg-transparent text-sm leading-relaxed"
                         placeholder="# Start writing your document..."
                         value={markdown}
                         onChange={(e) => setMarkdown(e.target.value)}
@@ -205,11 +211,11 @@ export function DocumentEditor({ initialData }: DocumentEditorProps) {
                 </div>
 
                 {/* Right: Preview Workspace */}
-                <div className="w-1/2 bg-slate-100 dark:bg-slate-950 p-8 print:w-full print:p-0 overflow-y-auto flex flex-col items-center">
+                <div className="w-1/2 bg-slate-100 dark:bg-zinc-900 p-8 print:w-full print:p-0 overflow-y-auto flex flex-col items-center">
                     <div ref={contentRef} className="my-4">
                         <Card
                             className={cn(
-                                "shadow-xl print:shadow-none print:border-0 print:[print-color-adjust:exact] bg-white text-slate-950",
+                                "shadow-2xl print:shadow-none print:border-0 print:[print-color-adjust:exact] bg-white text-slate-950",
                                 getFontFamilyClass(fontFamily)
                             )}
                             style={{
