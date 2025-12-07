@@ -30,14 +30,14 @@ interface BrandingToolbarProps {
 }
 
 const LOGO_PRESETS = [
-    { label: "None", value: "" },
+    { label: "None", value: "none" },
     { label: "Abstract Cube", value: "https://img.logoipsum.com/243.svg" },
     { label: "Hexagon", value: "https://img.logoipsum.com/296.svg" },
     { label: "Circle Tech", value: "https://img.logoipsum.com/286.svg" },
 ]
 
 const BG_PRESETS = [
-    { label: "None", value: "" },
+    { label: "None", value: "none" },
     { label: "Cubes", value: "https://www.transparenttextures.com/patterns/cubes.png" },
     { label: "Stardust", value: "https://www.transparenttextures.com/patterns/stardust.png" },
     { label: "Graph Paper", value: "https://www.transparenttextures.com/patterns/graphy.png" },
@@ -97,8 +97,8 @@ export function BrandingToolbar({
             <div className="flex items-center gap-2 min-w-fit">
                 <ImageIcon className="h-4 w-4 text-muted-foreground" />
                 <Select
-                    value={LOGO_PRESETS.some(p => p.value === logoUrl) ? logoUrl : "custom"}
-                    onValueChange={(val) => val !== "custom" && setLogoUrl(val)}
+                    value={LOGO_PRESETS.some(p => p.value === logoUrl) ? (logoUrl === "" ? "none" : logoUrl) : "custom"}
+                    onValueChange={(val) => val !== "custom" && setLogoUrl(val === "none" ? "" : val)}
                 >
                     <SelectTrigger className="w-[130px] h-8 text-xs">
                         <SelectValue placeholder="Logo" />
@@ -117,11 +117,12 @@ export function BrandingToolbar({
             <div className="flex items-center gap-2 min-w-fit">
                 <LayoutTemplate className="h-4 w-4 text-muted-foreground" />
                 <Select
-                    value={BG_PRESETS.some(p => p.value === backgroundImage) ? backgroundImage : "custom"}
+                    value={BG_PRESETS.some(p => p.value === backgroundImage) ? (backgroundImage === "" ? "none" : backgroundImage) : "custom"}
                     onValueChange={(val) => {
                         if (val !== "custom") {
-                            setBackgroundImage(val)
-                            setShowBackground(!!val)
+                            const newValue = val === "none" ? "" : val
+                            setBackgroundImage(newValue)
+                            setShowBackground(!!newValue)
                         }
                     }}
                 >
